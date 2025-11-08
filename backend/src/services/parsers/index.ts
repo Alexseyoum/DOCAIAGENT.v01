@@ -1,4 +1,5 @@
 import { parsePDF, PDFParseResult } from './pdf-parser';
+import { parseDOCX, DOCXParseResult } from './docx-parser';
 import { logger } from '../../utils/logger';
 import path from 'path';
 
@@ -25,10 +26,9 @@ export async function parseDocument(filePath: string, mimeType: string): Promise
       case '.txt':
         return await parseTXTDocument(filePath);
 
-      // TODO: Add more parsers
       case '.docx':
       case '.doc':
-        throw new Error('DOCX/DOC parsing not yet implemented (coming in US-005)');
+        return await parseDOCXDocument(filePath);
 
       case '.csv':
       case '.xlsx':
@@ -83,9 +83,23 @@ async function parseTXTDocument(filePath: string): Promise<ParseResult> {
 }
 
 /**
+ * Parse DOCX/DOC document
+ */
+async function parseDOCXDocument(filePath: string): Promise<ParseResult> {
+  const result: DOCXParseResult = await parseDOCX(filePath);
+
+  return {
+    text: result.text,
+    pageCount: result.metadata.estimatedPages,
+    wordCount: result.wordCount,
+    metadata: result.metadata
+  };
+}
+
+/**
  * Check if document type is supported for parsing
  */
 export function isParsingSupported(fileExtension: string): boolean {
-  const supportedExtensions = ['.pdf', '.txt'];
+  const supportedExtensions = ['.pdf', '.txt', '.docx', '.doc'];
   return supportedExtensions.includes(fileExtension.toLowerCase());
 }

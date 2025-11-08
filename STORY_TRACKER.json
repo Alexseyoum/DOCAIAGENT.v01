@@ -2,11 +2,11 @@
   "project": {
     "name": "Document Processing Agent",
     "startDate": "2025-01-08",
-    "currentSprint": null,
+    "currentSprint": "Sprint 1",
     "sprintDuration": "2 weeks"
   },
   "velocity": {
-    "sprint1": null,
+    "sprint1": 26,
     "sprint2": null,
     "sprint3": null,
     "sprint4": null,
@@ -19,19 +19,19 @@
       "epic": "Epic 1: Document Upload & Management",
       "priority": "P0",
       "storyPoints": 5,
-      "status": "To Do",
+      "status": "Done",
       "sprint": "Sprint 1",
       "assignee": "",
       "startDate": null,
-      "completedDate": null,
+      "completedDate": "2025-11-08",
       "blockers": [],
       "acceptanceCriteria": {
         "total": 10,
-        "completed": 0
+        "completed": 10
       },
       "tasks": {
         "total": 11,
-        "completed": 0
+        "completed": 11
       }
     },
     {
@@ -40,20 +40,22 @@
       "epic": "Epic 1: Document Upload & Management",
       "priority": "P1",
       "storyPoints": 2,
-      "status": "To Do",
+      "status": "Done",
       "sprint": "Sprint 1",
       "assignee": "",
       "startDate": null,
-      "completedDate": null,
+      "completedDate": "2025-11-08",
       "blockers": [],
-      "dependencies": ["US-001"],
+      "dependencies": [
+        "US-001"
+      ],
       "acceptanceCriteria": {
         "total": 6,
-        "completed": 0
+        "completed": 6
       },
       "tasks": {
         "total": 6,
-        "completed": 0
+        "completed": 6
       }
     },
     {
@@ -68,7 +70,10 @@
       "startDate": null,
       "completedDate": null,
       "blockers": [],
-      "dependencies": ["US-002", "US-004"],
+      "dependencies": [
+        "US-002",
+        "US-004"
+      ],
       "acceptanceCriteria": {
         "total": 7,
         "completed": 0
@@ -84,20 +89,22 @@
       "epic": "Epic 2: Text Extraction & Processing",
       "priority": "P0",
       "storyPoints": 5,
-      "status": "To Do",
+      "status": "Done",
       "sprint": "Sprint 1",
       "assignee": "",
       "startDate": null,
-      "completedDate": null,
+      "completedDate": "2025-11-08",
       "blockers": [],
-      "dependencies": ["US-001"],
+      "dependencies": [
+        "US-001"
+      ],
       "acceptanceCriteria": {
         "total": 8,
-        "completed": 0
+        "completed": 8
       },
       "tasks": {
         "total": 10,
-        "completed": 0
+        "completed": 10
       }
     },
     {
@@ -106,20 +113,23 @@
       "epic": "Epic 2: Text Extraction & Processing",
       "priority": "P1",
       "storyPoints": 5,
-      "status": "To Do",
+      "status": "Done",
       "sprint": "Sprint 1",
       "assignee": "",
       "startDate": null,
-      "completedDate": null,
+      "completedDate": "2025-11-08",
       "blockers": [],
-      "dependencies": ["US-001", "US-004"],
+      "dependencies": [
+        "US-001",
+        "US-004"
+      ],
       "acceptanceCriteria": {
         "total": 8,
-        "completed": 0
+        "completed": 8
       },
       "tasks": {
         "total": 9,
-        "completed": 0
+        "completed": 9
       }
     },
     {
@@ -134,7 +144,10 @@
       "startDate": null,
       "completedDate": null,
       "blockers": [],
-      "dependencies": ["US-001", "US-004"],
+      "dependencies": [
+        "US-001",
+        "US-004"
+      ],
       "acceptanceCriteria": {
         "total": 7,
         "completed": 0
@@ -150,20 +163,22 @@
       "epic": "Epic 2: Text Extraction & Processing",
       "priority": "P1",
       "storyPoints": 1,
-      "status": "To Do",
+      "status": "Done",
       "sprint": "Sprint 1",
       "assignee": "",
       "startDate": null,
-      "completedDate": null,
+      "completedDate": "2025-11-08",
       "blockers": [],
-      "dependencies": ["US-001"],
+      "dependencies": [
+        "US-001"
+      ],
       "acceptanceCriteria": {
         "total": 4,
-        "completed": 0
+        "completed": 4
       },
       "tasks": {
         "total": 3,
-        "completed": 0
+        "completed": 3
       }
     },
     {
@@ -172,20 +187,24 @@
       "epic": "Epic 3: Educational Content Generation",
       "priority": "P0",
       "storyPoints": 8,
-      "status": "To Do",
+      "status": "Done",
       "sprint": "Sprint 1",
       "assignee": "",
       "startDate": null,
-      "completedDate": null,
+      "completedDate": "2025-11-08",
       "blockers": [],
-      "dependencies": ["US-004", "US-005", "US-007"],
+      "dependencies": [
+        "US-004",
+        "US-005",
+        "US-007"
+      ],
       "acceptanceCriteria": {
         "total": 9,
-        "completed": 0
+        "completed": 9
       },
       "tasks": {
         "total": 12,
-        "completed": 0
+        "completed": 12
       }
     },
     {
@@ -200,7 +219,9 @@
       "startDate": null,
       "completedDate": null,
       "blockers": [],
-      "dependencies": ["US-008"],
+      "dependencies": [
+        "US-008"
+      ],
       "acceptanceCriteria": {
         "total": 6,
         "completed": 0
@@ -222,7 +243,10 @@
       "startDate": null,
       "completedDate": null,
       "blockers": [],
-      "dependencies": ["US-004", "US-008"],
+      "dependencies": [
+        "US-004",
+        "US-008"
+      ],
       "acceptanceCriteria": {
         "total": 10,
         "completed": 0
@@ -244,7 +268,10 @@
       "startDate": null,
       "completedDate": null,
       "blockers": [],
-      "dependencies": ["US-004", "US-008"],
+      "dependencies": [
+        "US-004",
+        "US-008"
+      ],
       "acceptanceCriteria": {
         "total": 7,
         "completed": 0
@@ -266,7 +293,11 @@
       "startDate": null,
       "completedDate": null,
       "blockers": [],
-      "dependencies": ["US-008", "US-010", "US-011"],
+      "dependencies": [
+        "US-008",
+        "US-010",
+        "US-011"
+      ],
       "acceptanceCriteria": {
         "total": 8,
         "completed": 0
@@ -288,7 +319,9 @@
       "startDate": null,
       "completedDate": null,
       "blockers": [],
-      "dependencies": ["US-012"],
+      "dependencies": [
+        "US-012"
+      ],
       "acceptanceCriteria": {
         "total": 7,
         "completed": 0
@@ -310,7 +343,9 @@
       "startDate": null,
       "completedDate": null,
       "blockers": [],
-      "dependencies": ["US-012"],
+      "dependencies": [
+        "US-012"
+      ],
       "acceptanceCriteria": {
         "total": 6,
         "completed": 0
@@ -354,7 +389,9 @@
       "startDate": null,
       "completedDate": null,
       "blockers": [],
-      "dependencies": ["US-015"],
+      "dependencies": [
+        "US-015"
+      ],
       "acceptanceCriteria": {
         "total": 5,
         "completed": 0
@@ -376,7 +413,9 @@
       "startDate": null,
       "completedDate": null,
       "blockers": [],
-      "dependencies": ["All API endpoints"],
+      "dependencies": [
+        "All API endpoints"
+      ],
       "acceptanceCriteria": {
         "total": 7,
         "completed": 0
@@ -398,7 +437,9 @@
       "startDate": null,
       "completedDate": null,
       "blockers": [],
-      "dependencies": ["US-012"],
+      "dependencies": [
+        "US-012"
+      ],
       "acceptanceCriteria": {
         "total": 5,
         "completed": 0
@@ -442,7 +483,9 @@
       "startDate": null,
       "completedDate": null,
       "blockers": [],
-      "dependencies": ["US-013"],
+      "dependencies": [
+        "US-013"
+      ],
       "acceptanceCriteria": {
         "total": 6,
         "completed": 0
@@ -510,10 +553,17 @@
       "goal": "MVP - Basic Upload & Summary",
       "startDate": null,
       "endDate": null,
-      "stories": ["US-001", "US-002", "US-004", "US-005", "US-007", "US-008"],
+      "stories": [
+        "US-001",
+        "US-002",
+        "US-004",
+        "US-005",
+        "US-007",
+        "US-008"
+      ],
       "totalPoints": 26,
-      "completedPoints": 0,
-      "status": "Not Started"
+      "completedPoints": 26,
+      "status": "In Progress"
     },
     {
       "id": "sprint-2",
@@ -521,7 +571,13 @@
       "goal": "Quiz & Flashcards",
       "startDate": null,
       "endDate": null,
-      "stories": ["US-003", "US-006", "US-009", "US-010", "US-011"],
+      "stories": [
+        "US-003",
+        "US-006",
+        "US-009",
+        "US-010",
+        "US-011"
+      ],
       "totalPoints": 32,
       "completedPoints": 0,
       "status": "Not Started"
@@ -532,7 +588,14 @@
       "goal": "Performance & Security",
       "startDate": null,
       "endDate": null,
-      "stories": ["US-012", "US-013", "US-014", "US-015", "US-016", "US-019"],
+      "stories": [
+        "US-012",
+        "US-013",
+        "US-014",
+        "US-015",
+        "US-016",
+        "US-019"
+      ],
       "totalPoints": 34,
       "completedPoints": 0,
       "status": "Not Started"
@@ -543,7 +606,11 @@
       "goal": "Integration & Polish",
       "startDate": null,
       "endDate": null,
-      "stories": ["US-017", "US-018", "US-020"],
+      "stories": [
+        "US-017",
+        "US-018",
+        "US-020"
+      ],
       "totalPoints": 16,
       "completedPoints": 0,
       "status": "Not Started"
@@ -552,11 +619,11 @@
   "metrics": {
     "totalStories": 20,
     "totalPoints": 139,
-    "completedStories": 0,
-    "completedPoints": 0,
+    "completedStories": 6,
+    "completedPoints": 26,
     "inProgressStories": 0,
     "blockedStories": 0,
-    "percentComplete": 0
+    "percentComplete": 19
   },
   "risks": [
     {

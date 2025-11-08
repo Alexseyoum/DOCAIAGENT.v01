@@ -29,7 +29,7 @@ export async function processDocument(req: Request, res: Response, next: NextFun
       throw new ApiException(
         ErrorCode.PROCESSING_FAILED,
         400,
-        `Text extraction not yet supported for ${document.fileExtension} files. Currently supported: .pdf, .txt`
+        `Text extraction not yet supported for ${document.fileExtension} files. Currently supported: .pdf, .docx, .doc, .txt`
       );
     }
 
