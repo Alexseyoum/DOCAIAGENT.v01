@@ -9,8 +9,11 @@ import { errorHandler, notFoundHandler } from './middleware/error-handler';
 import { llmService } from './services/llm-service';
 
 // Routes
+import authRoutes from './routes/auth';
 import documentRoutes from './routes/documents';
 import generationRoutes from './routes/generation';
+import monitoringRoutes from './routes/monitoring';
+import jobsRoutes from './routes/jobs';
 
 export function createApp(): Application {
   const app = express();
@@ -57,8 +60,11 @@ export function createApp(): Application {
   });
 
   // API routes
+  app.use('/api/v1/auth', authRoutes);
   app.use('/api/v1/documents', documentRoutes);
   app.use('/api/v1/generate', generationRoutes);
+  app.use('/api/v1/jobs', jobsRoutes);
+  app.use('/api/v1/monitoring', monitoringRoutes);
 
   // 404 handler
   app.use(notFoundHandler);

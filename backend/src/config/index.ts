@@ -19,7 +19,7 @@ export const config = {
 
   // JWT
   jwtSecret: process.env.JWT_SECRET || 'change-this-in-production',
-  jwtExpiresIn: '7d',
+  jwtExpiresIn: '7d' as const,
 
   // File Upload
   maxFileSizeMB: parseInt(process.env.MAX_FILE_SIZE_MB || '50', 10),

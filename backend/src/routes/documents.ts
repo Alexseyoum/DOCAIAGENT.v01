@@ -10,14 +10,15 @@ import {
   processDocument,
   getExtractedText
 } from '../controllers/processing-controller';
+import { uploadLimiter } from '../middleware/rate-limit';
 
 const router = Router();
 
 /**
  * POST /api/v1/documents/upload
- * Upload a document
+ * Upload a document (rate limited)
  */
-router.post('/upload', upload.single('file'), uploadDocument);
+router.post('/upload', uploadLimiter, upload.single('file'), uploadDocument);
 
 /**
  * GET /api/v1/documents/:id

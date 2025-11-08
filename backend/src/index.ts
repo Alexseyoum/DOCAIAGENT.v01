@@ -1,6 +1,7 @@
 import { createApp } from './app';
 import { config, validateConfig } from './config';
 import { logger } from './utils/logger';
+import { queueService } from './services/queue-service';
 
 // Validate configuration
 try {
@@ -13,6 +14,16 @@ try {
 // Create Express app
 const app = createApp();
 
+// Initialize queue service
+queueService.initialize().then(() => {
+  logger.info({
+    queueType: queueService.isUsingRedis() ? 'Redis' : 'In-Memory'
+  }, 'Queue service initialized');
+}).catch((error) => {
+  logger.error({ error }, 'Failed to initialize queue service');
+  process.exit(1);
+});
+
 // Start server
 const server = app.listen(config.port, () => {
   logger.info({
@@ -23,16 +34,18 @@ const server = app.listen(config.port, () => {
 });
 
 // Graceful shutdown
-process.on('SIGTERM', () => {
+process.on('SIGTERM', async () => {
   logger.info('SIGTERM signal received: closing HTTP server');
+  await queueService.close();
   server.close(() => {
     logger.info('HTTP server closed');
     process.exit(0);
   });
 });
 
-process.on('SIGINT', () => {
+process.on('SIGINT', async () => {
   logger.info('SIGINT signal received: closing HTTP server');
+  await queueService.close();
   server.close(() => {
     logger.info('HTTP server closed');
     process.exit(0);

@@ -3,6 +3,7 @@ import { ApiError, ErrorCode } from '../types';
 import { logger } from '../utils/logger';
 import { MulterError } from 'multer';
 import { config } from '../config';
+import { errorTracking, sanitizeStackTrace, getErrorSeverity } from '../services/error-tracking';
 
 /**
  * Custom API Error class
@@ -46,39 +47,53 @@ export function errorHandler(
   res: Response,
   _next: NextFunction
 ) {
-  // Log error
+  const requestId = (req as any).requestId;
+  const context = {
+    requestId,
+    endpoint: req.path,
+    method: req.method,
+    userAgent: req.get('user-agent'),
+    ip: req.ip
+  };
+
+  // Log error with sanitized stack trace
+  const sanitized = sanitizeStackTrace(err, config.env !== 'production');
   logger.error({
-    err,
+    ...sanitized,
     url: req.url,
     method: req.method,
-    requestId: (req as any).requestId
+    requestId,
+    severity: getErrorSeverity(500)
   }, 'Request error');
 
   // Handle Multer errors
   if (err instanceof MulterError) {
-    if (err.code === 'LIMIT_FILE_SIZE') {
-      return res.status(413).json({
-        success: false,
-        error: createErrorResponse(
-          ErrorCode.FILE_TOO_LARGE,
-          `File size exceeds maximum limit of ${config.maxFileSizeMB}MB`
-        ),
-        requestId: (req as any).requestId
-      });
-    }
+    const errorCode = err.code === 'LIMIT_FILE_SIZE'
+      ? ErrorCode.FILE_TOO_LARGE
+      : ErrorCode.INVALID_PARAMETERS;
+    const statusCode = err.code === 'LIMIT_FILE_SIZE' ? 413 : 400;
+    const message = err.code === 'LIMIT_FILE_SIZE'
+      ? `File size exceeds maximum limit of ${config.maxFileSizeMB}MB`
+      : err.message;
 
-    return res.status(400).json({
+    // Track error
+    errorTracking.trackError(errorCode, message, { ...context, statusCode });
+
+    return res.status(statusCode).json({
       success: false,
-      error: createErrorResponse(
-        ErrorCode.INVALID_PARAMETERS,
-        err.message
-      ),
-      requestId: (req as any).requestId
+      error: createErrorResponse(errorCode, message),
+      requestId
     });
   }
 
   // Handle custom API exceptions
   if (err instanceof ApiException) {
+    // Track error
+    errorTracking.trackError(err.code, err.message, {
+      ...context,
+      statusCode: err.statusCode
+    });
+
     return res.status(err.statusCode).json({
       success: false,
       error: createErrorResponse(
@@ -86,19 +101,24 @@ export function errorHandler(
         err.message,
         err.details
       ),
-      requestId: (req as any).requestId
+      requestId
     });
   }
 
   // Handle unknown errors
   const statusCode = 500;
+  const message = config.env === 'production' ? 'Internal server error' : err.message;
+
+  // Track error
+  errorTracking.trackError(ErrorCode.INTERNAL_ERROR, message, {
+    ...context,
+    statusCode
+  });
+
   return res.status(statusCode).json({
     success: false,
-    error: createErrorResponse(
-      ErrorCode.INTERNAL_ERROR,
-      config.env === 'production' ? 'Internal server error' : err.message
-    ),
-    requestId: (req as any).requestId
+    error: createErrorResponse(ErrorCode.INTERNAL_ERROR, message),
+    requestId
   });
 }
 

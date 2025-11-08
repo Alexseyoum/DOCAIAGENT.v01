@@ -1,7 +1,11 @@
 import { Router } from 'express';
 import { generateSummary, generateQuiz, generateFlashcards } from '../controllers/generation-controller';
+import { generationLimiter } from '../middleware/rate-limit';
 
 const router = Router();
+
+// Apply rate limiting to all generation endpoints
+router.use(generationLimiter);
 
 /**
  * POST /api/v1/generate/summary
