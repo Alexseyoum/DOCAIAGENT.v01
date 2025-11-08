@@ -117,7 +117,7 @@ export async function getDocument(req: Request, res: Response, next: NextFunctio
  * List all documents
  * GET /api/v1/documents
  */
-export async function listDocuments(req: Request, res: Response, next: NextFunction) {
+export async function listDocuments(_req: Request, res: Response, next: NextFunction) {
   try {
     // Get all documents from store
     const documents = documentStore.getAll();
