@@ -14,8 +14,8 @@ import type {
   RegisterWebhookOptions,
   HealthStatus,
   ApiResponse,
-  DocumentAgentError,
 } from './types';
+import { DocumentAgentError } from './types';
 
 /**
  * Document Processing Agent Client
@@ -40,10 +40,13 @@ export class DocumentAgentClient {
   ): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
 
-    const headers: HeadersInit = {
+    const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      ...options.headers,
     };
+
+    if (options.headers) {
+      Object.assign(headers, options.headers);
+    }
 
     if (this.apiKey) {
       headers['Authorization'] = `Bearer ${this.apiKey}`;
@@ -104,7 +107,7 @@ export class DocumentAgentClient {
       formData.append('file', options.file);
     } else {
       // Buffer support for Node.js
-      const blob = new Blob([options.file]);
+      const blob = new Blob([new Uint8Array(options.file)]);
       formData.append('file', blob, options.filename);
     }
 
