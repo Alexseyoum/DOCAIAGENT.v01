@@ -4,7 +4,8 @@ import {
   uploadDocument,
   getDocument,
   getDocumentStatus,
-  deleteDocument
+  deleteDocument,
+  getDocumentAnalysis
 } from '../controllers/document-controller';
 import {
   processDocument,
@@ -31,6 +32,12 @@ router.get('/:id', getDocument);
  * Get document processing status
  */
 router.get('/:id/status', getDocumentStatus);
+
+/**
+ * GET /api/v1/documents/:id/analysis
+ * Get document size analysis and processing recommendations
+ */
+router.get('/:id/analysis', getDocumentAnalysis);
 
 /**
  * POST /api/v1/documents/:id/process

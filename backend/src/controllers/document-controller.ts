@@ -4,6 +4,7 @@ import { validateFile, getFileExtension } from '../utils/validation';
 import { ApiException } from '../middleware/error-handler';
 import { ErrorCode, DocumentMetadata, UploadResponse, DocumentRetrievalResponse } from '../types';
 import { logger } from '../utils/logger';
+import { getChunkingStats } from '../utils/text-chunking';
 
 /**
  * Upload a document
@@ -175,6 +176,99 @@ export async function deleteDocument(req: Request, res: Response, next: NextFunc
     logger.info({ documentId: id }, 'Document deleted successfully');
 
     res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
+}
+
+/**
+ * Get document size analysis and processing recommendations
+ * GET /api/v1/documents/:id/analysis
+ */
+export async function getDocumentAnalysis(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { id } = req.params;
+
+    const document = documentStore.get(id);
+
+    if (!document) {
+      throw new ApiException(
+        ErrorCode.DOCUMENT_NOT_FOUND,
+        404,
+        `Document with ID ${id} not found`
+      );
+    }
+
+    const analysis: any = {
+      documentId: id,
+      filename: document.originalFilename,
+      fileSize: {
+        bytes: document.fileSize,
+        kilobytes: Math.round(document.fileSize / 1024),
+        megabytes: (document.fileSize / (1024 * 1024)).toFixed(2)
+      },
+      status: document.status
+    };
+
+    // Add extracted text analysis if available
+    if (document.extractedText) {
+      const chunkingStats = getChunkingStats(document.extractedText);
+
+      analysis.textAnalysis = {
+        textLength: chunkingStats.textLength,
+        wordCount: document.wordCount,
+        estimatedTokens: chunkingStats.estimatedTokens,
+        isLarge: chunkingStats.textLength > 20000, // 20k+ characters considered large
+        chunking: {
+          required: chunkingStats.textLength > 8000, // Chunking recommended for 8k+ chars
+          estimatedChunks: chunkingStats.estimatedChunks,
+          recommendedChunkSize: chunkingStats.recommendedMaxChunkSize
+        },
+        pagination: {
+          recommended: chunkingStats.textLength > 10000,
+          defaultPageSize: 10000,
+          estimatedPages: Math.ceil(chunkingStats.textLength / 10000)
+        }
+      };
+
+      // Add processing recommendations
+      analysis.recommendations = [];
+
+      if (chunkingStats.textLength > 8000) {
+        analysis.recommendations.push({
+          type: 'chunking',
+          message: 'Document is large. Consider using chunked processing for LLM operations.',
+          endpoint: 'Use async job processing for better handling'
+        });
+      }
+
+      if (chunkingStats.textLength > 10000) {
+        analysis.recommendations.push({
+          type: 'pagination',
+          message: 'Use pagination when retrieving text',
+          example: `/api/v1/documents/${id}/text?page=1&pageSize=10000`
+        });
+      }
+
+      if (chunkingStats.estimatedTokens > 4000) {
+        analysis.recommendations.push({
+          type: 'token_limit',
+          message: 'Document may exceed typical LLM context windows',
+          suggestion: 'Use async job processing or summarize in chunks'
+        });
+      }
+    } else {
+      analysis.textAnalysis = {
+        message: 'Document not yet processed. Process to get text analysis.',
+        processEndpoint: `/api/v1/documents/${id}/process`
+      };
+    }
+
+    res.status(200).json({
+      success: true,
+      data: analysis
+    });
+
   } catch (error) {
     next(error);
   }

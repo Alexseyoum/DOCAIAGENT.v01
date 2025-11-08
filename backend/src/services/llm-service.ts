@@ -3,6 +3,7 @@ import { logger } from '../utils/logger';
 import Anthropic from '@anthropic-ai/sdk';
 import Groq from 'groq-sdk';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { cacheService } from './cache-service';
 
 // Unified LLM response interface
 export interface LLMResponse {
@@ -50,7 +51,7 @@ class LLMService {
   }
 
   /**
-   * Generate text using the configured LLM provider
+   * Generate text using the configured LLM provider (with caching)
    */
   async generateText(
     systemPrompt: string,
@@ -58,29 +59,53 @@ class LLMService {
     options: {
       maxTokens?: number;
       temperature?: number;
+      useCache?: boolean;
+      cacheTTL?: number;
     } = {}
   ): Promise<LLMResponse> {
-    const { maxTokens = 4096, temperature = 0.7 } = options;
+    const { maxTokens = 4096, temperature = 0.7, useCache = true, cacheTTL = 3600 } = options;
+
+    // Check cache first if enabled
+    if (useCache) {
+      const cached = await cacheService.getCachedLLMResponse(systemPrompt, userPrompt);
+      if (cached) {
+        logger.info({ provider: config.llmProvider }, 'Using cached LLM response');
+        return cached;
+      }
+    }
 
     logger.info({
       provider: config.llmProvider,
       promptLength: userPrompt.length,
-      maxTokens
+      maxTokens,
+      cached: false
     }, 'Generating text with LLM');
+
+    let response: LLMResponse;
 
     switch (config.llmProvider) {
       case 'anthropic':
-        return this.generateWithClaude(systemPrompt, userPrompt, maxTokens, temperature);
+        response = await this.generateWithClaude(systemPrompt, userPrompt, maxTokens, temperature);
+        break;
 
       case 'groq':
-        return this.generateWithGroq(systemPrompt, userPrompt, maxTokens, temperature);
+        response = await this.generateWithGroq(systemPrompt, userPrompt, maxTokens, temperature);
+        break;
 
       case 'gemini':
-        return this.generateWithGemini(systemPrompt, userPrompt, maxTokens, temperature);
+        response = await this.generateWithGemini(systemPrompt, userPrompt, maxTokens, temperature);
+        break;
 
       default:
         throw new Error(`Unsupported LLM provider: ${config.llmProvider}`);
     }
+
+    // Cache the response if caching is enabled
+    if (useCache) {
+      await cacheService.cacheLLMResponse(systemPrompt, userPrompt, response, cacheTTL);
+    }
+
+    return response;
   }
 
   /**

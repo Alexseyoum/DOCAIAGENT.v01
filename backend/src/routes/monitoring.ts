@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { errorTracking } from '../services/error-tracking';
+import { cacheService } from '../services/cache-service';
 
 const router = Router();
 
@@ -48,6 +49,36 @@ router.get('/errors/endpoints', (_req: Request, res: Response) => {
     data: {
       endpoints: endpointErrors
     }
+  });
+});
+
+/**
+ * GET /api/v1/monitoring/cache
+ * Get cache statistics and metrics
+ */
+router.get('/cache', (_req: Request, res: Response) => {
+  const stats = cacheService.getStats();
+
+  res.json({
+    success: true,
+    data: {
+      ...stats,
+      timestamp: new Date().toISOString()
+    }
+  });
+});
+
+/**
+ * DELETE /api/v1/monitoring/cache
+ * Clear all cache entries
+ */
+router.delete('/cache', async (_req: Request, res: Response) => {
+  await cacheService.clear();
+
+  res.json({
+    success: true,
+    message: 'Cache cleared successfully',
+    timestamp: new Date().toISOString()
   });
 });
 

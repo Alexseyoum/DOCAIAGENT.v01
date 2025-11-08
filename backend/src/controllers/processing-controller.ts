@@ -93,12 +93,15 @@ export async function processDocument(req: Request, res: Response, next: NextFun
 }
 
 /**
- * Get extracted text from processed document
+ * Get extracted text from processed document (with pagination for large documents)
  * GET /api/v1/documents/:id/text
  */
 export async function getExtractedText(req: Request, res: Response, next: NextFunction) {
   try {
     const { id } = req.params;
+    const page = parseInt(req.query.page as string) || 1;
+    const pageSize = parseInt(req.query.pageSize as string) || 10000; // 10k characters per page
+    const full = req.query.full === 'true'; // Get full text without pagination
 
     const document = documentStore.get(id);
 
@@ -118,13 +121,59 @@ export async function getExtractedText(req: Request, res: Response, next: NextFu
       );
     }
 
+    const textLength = document.extractedText.length;
+
+    // Return full text if requested or if text is small
+    if (full || textLength <= pageSize) {
+      res.status(200).json({
+        success: true,
+        documentId: id,
+        text: document.extractedText,
+        wordCount: document.wordCount,
+        pageCount: document.pageCount,
+        extractedAt: document.extractedAt,
+        pagination: {
+          totalLength: textLength,
+          currentPage: 1,
+          totalPages: 1,
+          pageSize: textLength
+        }
+      });
+      return;
+    }
+
+    // Paginate large text
+    const totalPages = Math.ceil(textLength / pageSize);
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = Math.min(startIndex + pageSize, textLength);
+
+    if (page < 1 || page > totalPages) {
+      throw new ApiException(
+        ErrorCode.INVALID_PARAMETERS,
+        400,
+        `Invalid page number. Valid range: 1-${totalPages}`
+      );
+    }
+
+    const pageText = document.extractedText.substring(startIndex, endIndex);
+
     res.status(200).json({
       success: true,
       documentId: id,
-      text: document.extractedText,
+      text: pageText,
       wordCount: document.wordCount,
       pageCount: document.pageCount,
-      extractedAt: document.extractedAt
+      extractedAt: document.extractedAt,
+      pagination: {
+        totalLength: textLength,
+        currentPage: page,
+        totalPages,
+        pageSize,
+        startIndex,
+        endIndex,
+        hasNextPage: page < totalPages,
+        hasPreviousPage: page > 1
+      }
     });
 
   } catch (error) {
