@@ -1,13 +1,33 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Build outputs
+dist/
+**/dist/
+*.tsbuildinfo
+
 # Test files
 test-document.txt
+test-*.txt
+test_*.txt
+*_test.txt
+*.csv
+test_*.sh
 
 # Temporary files
 *.tmp
 *.temp
+nul
+*.pid
+server.pid
 
 # Environment files
 .env
 .env.local
+
+# Sensitive config
+.claude/mcp.json
 
 # Logs
 *.log
