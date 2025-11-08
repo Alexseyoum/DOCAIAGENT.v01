@@ -3,6 +3,7 @@ import { upload } from '../middleware/upload';
 import {
   uploadDocument,
   getDocument,
+  listDocuments,
   getDocumentStatus,
   deleteDocument,
   getDocumentAnalysis
@@ -20,6 +21,12 @@ const router = Router();
  * Upload a document (rate limited)
  */
 router.post('/upload', uploadLimiter, upload.single('file'), uploadDocument);
+
+/**
+ * GET /api/v1/documents
+ * List all documents
+ */
+router.get('/', listDocuments);
 
 /**
  * GET /api/v1/documents/:id

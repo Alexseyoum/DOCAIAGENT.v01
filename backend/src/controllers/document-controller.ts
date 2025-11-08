@@ -114,6 +114,36 @@ export async function getDocument(req: Request, res: Response, next: NextFunctio
 }
 
 /**
+ * List all documents
+ * GET /api/v1/documents
+ */
+export async function listDocuments(req: Request, res: Response, next: NextFunction) {
+  try {
+    // Get all documents from store
+    const documents = documentStore.getAll();
+
+    // Map to response format
+    const documentList = documents.map(doc => ({
+      documentId: doc.documentId,
+      filename: doc.originalFilename,
+      fileSize: doc.fileSize,
+      mimeType: doc.mimeType,
+      uploadedAt: doc.uploadedAt,
+      status: doc.status,
+      pageCount: doc.pageCount
+    }));
+
+    res.status(200).json({
+      success: true,
+      count: documentList.length,
+      data: documentList
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+/**
  * Get document status
  * GET /api/v1/documents/:id/status
  */
