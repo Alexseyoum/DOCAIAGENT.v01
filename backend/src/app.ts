@@ -2,6 +2,7 @@ import express, { Application, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import pinoHttp from 'pino-http';
+import path from 'path';
 import { logger } from './utils/logger';
 import { requestIdMiddleware } from './middleware/request-id';
 import { errorHandler, notFoundHandler } from './middleware/error-handler';
@@ -20,8 +21,16 @@ import webhooksRoutes from './routes/webhooks';
 export function createApp(): Application {
   const app = express();
 
-  // Security middleware
-  app.use(helmet());
+  // Security middleware - Relax CSP for inline scripts in landing page
+  app.use(helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
+        styleSrc: ["'self'", "'unsafe-inline'"]
+      }
+    }
+  }));
 
   // CORS
   app.use(cors({
@@ -32,6 +41,10 @@ export function createApp(): Application {
   // Body parsing
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
+
+  // Serve static files from public directory
+  const publicPath = path.join(__dirname, '..', 'public');
+  app.use(express.static(publicPath));
 
   // Request ID
   app.use(requestIdMiddleware);
