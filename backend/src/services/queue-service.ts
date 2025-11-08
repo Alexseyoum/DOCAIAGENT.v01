@@ -1,5 +1,6 @@
 import { Queue, Worker, Job, QueueEvents } from 'bullmq';
 import { logger } from '../utils/logger';
+import { webhookService } from './webhook-service';
 
 export interface JobData {
   type: 'process_document' | 'generate_summary' | 'generate_quiz' | 'generate_flashcards';
@@ -51,6 +52,13 @@ class InMemoryQueue {
       job.completedAt = new Date();
 
       logger.info({ jobId, type: job.data.type }, 'Job completed');
+
+      // Trigger webhook
+      webhookService.trigger('job.completed', {
+        jobId,
+        type: job.data.type,
+        documentId: job.data.documentId
+      }).catch(err => logger.error({ error: err }, 'Failed to trigger job.completed webhook'));
     } catch (error) {
       job.status = 'failed';
       job.result = {
@@ -60,6 +68,14 @@ class InMemoryQueue {
       job.completedAt = new Date();
 
       logger.error({ jobId, error }, 'Job failed');
+
+      // Trigger webhook
+      webhookService.trigger('job.failed', {
+        jobId,
+        type: job.data.type,
+        documentId: job.data.documentId,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      }).catch(err => logger.error({ error: err }, 'Failed to trigger job.failed webhook'));
     }
   }
 
@@ -136,10 +152,27 @@ class QueueService {
 
       this.worker.on('completed', (job) => {
         logger.info({ jobId: job.id }, 'Job completed');
+
+        // Trigger webhook
+        webhookService.trigger('job.completed', {
+          jobId: job.id,
+          type: job.data.type,
+          documentId: job.data.documentId
+        }).catch(err => logger.error({ error: err }, 'Failed to trigger job.completed webhook'));
       });
 
       this.worker.on('failed', (job, err) => {
         logger.error({ jobId: job?.id, error: err }, 'Job failed');
+
+        // Trigger webhook
+        if (job) {
+          webhookService.trigger('job.failed', {
+            jobId: job.id,
+            type: job.data.type,
+            documentId: job.data.documentId,
+            error: err.message
+          }).catch(webhookErr => logger.error({ error: webhookErr }, 'Failed to trigger job.failed webhook'));
+        }
       });
 
       this.useRedis = true;

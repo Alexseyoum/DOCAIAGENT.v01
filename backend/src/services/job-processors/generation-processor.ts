@@ -2,6 +2,7 @@ import { JobData, JobResult } from '../queue-service';
 import { documentStore } from '../../storage/document-store';
 import { llmService } from '../llm-service';
 import { logger } from '../../utils/logger';
+import { webhookService } from '../webhook-service';
 
 export async function generateSummaryJob(jobData: JobData): Promise<JobResult> {
   try {
@@ -27,6 +28,13 @@ export async function generateSummaryJob(jobData: JobData): Promise<JobResult> {
       maxTokens,
       temperature: 0.3
     });
+
+    // Trigger webhook
+    webhookService.trigger('summary.generated', {
+      documentId,
+      detailLevel,
+      summaryLength: llmResponse.content.length
+    }).catch(err => logger.error({ error: err }, 'Failed to trigger summary.generated webhook'));
 
     return {
       success: true,
@@ -76,6 +84,14 @@ export async function generateQuizJob(jobData: JobData): Promise<JobResult> {
       quiz = llmResponse.content;
     }
 
+    // Trigger webhook
+    webhookService.trigger('quiz.generated', {
+      documentId,
+      questionCount,
+      difficulty,
+      questionTypes
+    }).catch(err => logger.error({ error: err }, 'Failed to trigger quiz.generated webhook'));
+
     return {
       success: true,
       data: { quiz, questionCount, difficulty, questionTypes }
@@ -122,6 +138,13 @@ export async function generateFlashcardsJob(jobData: JobData): Promise<JobResult
     } catch {
       flashcards = llmResponse.content;
     }
+
+    // Trigger webhook
+    webhookService.trigger('flashcards.generated', {
+      documentId,
+      cardCount,
+      focusAreas
+    }).catch(err => logger.error({ error: err }, 'Failed to trigger flashcards.generated webhook'));
 
     return {
       success: true,

@@ -2,6 +2,7 @@ import { JobData, JobResult } from '../queue-service';
 import { parseDocument } from '../parsers';
 import { documentStore } from '../../storage/document-store';
 import { logger } from '../../utils/logger';
+import { webhookService } from '../webhook-service';
 
 export async function processDocumentJob(jobData: JobData): Promise<JobResult> {
   try {
@@ -33,6 +34,14 @@ export async function processDocumentJob(jobData: JobData): Promise<JobResult> {
       pageCount: parseResult.pageCount
     }, 'Document processed successfully');
 
+    // Trigger webhook
+    webhookService.trigger('document.processed', {
+      documentId,
+      wordCount: parseResult.wordCount,
+      pageCount: parseResult.pageCount,
+      status: 'completed'
+    }).catch(err => logger.error({ error: err }, 'Failed to trigger document.processed webhook'));
+
     return {
       success: true,
       data: {
@@ -54,6 +63,13 @@ export async function processDocumentJob(jobData: JobData): Promise<JobResult> {
     } catch (updateError) {
       logger.error({ error: updateError }, 'Failed to update document status');
     }
+
+    // Trigger webhook
+    webhookService.trigger('document.failed', {
+      documentId: jobData.documentId,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      status: 'failed'
+    }).catch(err => logger.error({ error: err }, 'Failed to trigger document.failed webhook'));
 
     return {
       success: false,
