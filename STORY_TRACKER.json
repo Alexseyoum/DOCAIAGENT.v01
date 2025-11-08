@@ -2,15 +2,15 @@
   "project": {
     "name": "Document Processing Agent",
     "startDate": "2025-01-08",
-    "currentSprint": "Sprint 1",
+    "currentSprint": "Sprint 2",
     "sprintDuration": "2 weeks"
   },
   "velocity": {
     "sprint1": 26,
-    "sprint2": null,
+    "sprint2": 32,
     "sprint3": null,
     "sprint4": null,
-    "average": null
+    "average": 29
   },
   "stories": [
     {
@@ -64,11 +64,11 @@
       "epic": "Epic 1: Document Upload & Management",
       "priority": "P2",
       "storyPoints": 3,
-      "status": "To Do",
+      "status": "Done",
       "sprint": "Sprint 2",
       "assignee": "",
       "startDate": null,
-      "completedDate": null,
+      "completedDate": "2025-11-08",
       "blockers": [],
       "dependencies": [
         "US-002",
@@ -76,11 +76,11 @@
       ],
       "acceptanceCriteria": {
         "total": 7,
-        "completed": 0
+        "completed": 7
       },
       "tasks": {
         "total": 7,
-        "completed": 0
+        "completed": 7
       }
     },
     {
@@ -138,11 +138,11 @@
       "epic": "Epic 2: Text Extraction & Processing",
       "priority": "P2",
       "storyPoints": 3,
-      "status": "To Do",
+      "status": "Done",
       "sprint": "Sprint 2",
       "assignee": "",
       "startDate": null,
-      "completedDate": null,
+      "completedDate": "2025-11-08",
       "blockers": [],
       "dependencies": [
         "US-001",
@@ -150,11 +150,11 @@
       ],
       "acceptanceCriteria": {
         "total": 7,
-        "completed": 0
+        "completed": 7
       },
       "tasks": {
         "total": 7,
-        "completed": 0
+        "completed": 7
       }
     },
     {
@@ -213,22 +213,22 @@
       "epic": "Epic 3: Educational Content Generation",
       "priority": "P1",
       "storyPoints": 5,
-      "status": "To Do",
+      "status": "Done",
       "sprint": "Sprint 2",
       "assignee": "",
       "startDate": null,
-      "completedDate": null,
+      "completedDate": "2025-11-08",
       "blockers": [],
       "dependencies": [
         "US-008"
       ],
       "acceptanceCriteria": {
         "total": 6,
-        "completed": 0
+        "completed": 6
       },
       "tasks": {
         "total": 6,
-        "completed": 0
+        "completed": 6
       }
     },
     {
@@ -237,11 +237,11 @@
       "epic": "Epic 3: Educational Content Generation",
       "priority": "P0",
       "storyPoints": 13,
-      "status": "To Do",
+      "status": "Done",
       "sprint": "Sprint 2",
       "assignee": "",
       "startDate": null,
-      "completedDate": null,
+      "completedDate": "2025-11-08",
       "blockers": [],
       "dependencies": [
         "US-004",
@@ -249,11 +249,11 @@
       ],
       "acceptanceCriteria": {
         "total": 10,
-        "completed": 0
+        "completed": 10
       },
       "tasks": {
         "total": 10,
-        "completed": 0
+        "completed": 10
       }
     },
     {
@@ -262,11 +262,11 @@
       "epic": "Epic 3: Educational Content Generation",
       "priority": "P1",
       "storyPoints": 8,
-      "status": "To Do",
+      "status": "Done",
       "sprint": "Sprint 2",
       "assignee": "",
       "startDate": null,
-      "completedDate": null,
+      "completedDate": "2025-11-08",
       "blockers": [],
       "dependencies": [
         "US-004",
@@ -274,11 +274,11 @@
       ],
       "acceptanceCriteria": {
         "total": 7,
-        "completed": 0
+        "completed": 7
       },
       "tasks": {
         "total": 8,
-        "completed": 0
+        "completed": 8
       }
     },
     {
@@ -619,11 +619,11 @@
   "metrics": {
     "totalStories": 20,
     "totalPoints": 139,
-    "completedStories": 6,
-    "completedPoints": 26,
+    "completedStories": 11,
+    "completedPoints": 58,
     "inProgressStories": 0,
     "blockedStories": 0,
-    "percentComplete": 19
+    "percentComplete": 42
   },
   "risks": [
     {

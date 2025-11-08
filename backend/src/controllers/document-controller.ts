@@ -159,13 +159,20 @@ export async function deleteDocument(req: Request, res: Response, next: NextFunc
       );
     }
 
-    // Delete from store
+    // Delete physical file from disk
+    try {
+      const fs = await import('fs/promises');
+      await fs.unlink(document.filePath);
+      logger.info({ documentId: id, filePath: document.filePath }, 'Physical file deleted');
+    } catch (fileError) {
+      // Log but don't fail if file is already deleted
+      logger.warn({ documentId: id, error: fileError }, 'Could not delete physical file (may already be deleted)');
+    }
+
+    // Delete from store (this also removes generated content references)
     documentStore.delete(id);
 
-    // TODO: Delete physical file from disk
-    // TODO: Delete generated content (summaries, quizzes, flashcards)
-
-    logger.info({ documentId: id }, 'Document deleted');
+    logger.info({ documentId: id }, 'Document deleted successfully');
 
     res.status(204).send();
   } catch (error) {

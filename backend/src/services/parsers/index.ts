@@ -1,5 +1,7 @@
 import { parsePDF, PDFParseResult } from './pdf-parser';
 import { parseDOCX, DOCXParseResult } from './docx-parser';
+import { parseExcel, ExcelParseResult } from './excel-parser';
+import { parseCSV, CSVParseResult } from './csv-parser';
 import { logger } from '../../utils/logger';
 import path from 'path';
 
@@ -30,9 +32,12 @@ export async function parseDocument(filePath: string, mimeType: string): Promise
       case '.doc':
         return await parseDOCXDocument(filePath);
 
-      case '.csv':
       case '.xlsx':
-        throw new Error('CSV/Excel parsing not yet implemented (coming in US-006)');
+      case '.xls':
+        return await parseExcelDocument(filePath);
+
+      case '.csv':
+        return await parseCSVDocument(filePath);
 
       default:
         throw new Error(`Unsupported file type: ${ext}`);
@@ -97,9 +102,35 @@ async function parseDOCXDocument(filePath: string): Promise<ParseResult> {
 }
 
 /**
+ * Parse Excel document (XLSX/XLS)
+ */
+async function parseExcelDocument(filePath: string): Promise<ParseResult> {
+  const result: ExcelParseResult = await parseExcel(filePath);
+
+  return {
+    text: result.text,
+    wordCount: result.wordCount,
+    metadata: result.metadata
+  };
+}
+
+/**
+ * Parse CSV document
+ */
+async function parseCSVDocument(filePath: string): Promise<ParseResult> {
+  const result: CSVParseResult = await parseCSV(filePath);
+
+  return {
+    text: result.text,
+    wordCount: result.wordCount,
+    metadata: result.metadata
+  };
+}
+
+/**
  * Check if document type is supported for parsing
  */
 export function isParsingSupported(fileExtension: string): boolean {
-  const supportedExtensions = ['.pdf', '.txt', '.docx', '.doc'];
+  const supportedExtensions = ['.pdf', '.txt', '.docx', '.doc', '.xlsx', '.xls', '.csv'];
   return supportedExtensions.includes(fileExtension.toLowerCase());
 }
