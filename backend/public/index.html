@@ -313,7 +313,7 @@
                         <input type="text" id="name" placeholder="Your Name" autocomplete="name">
                     </div>
 
-                    <button id="registerBtn" class="test-btn" onclick="register()">Register & Get API Key</button>
+                    <button id="registerBtn" class="test-btn">Register & Get API Key</button>
 
                     <div id="debug" class="debug-info hidden"></div>
                     <div id="result" class="result hidden"></div>
@@ -540,6 +540,9 @@
             console.error('[ERROR] Global error:', e);
             showDebug(`Global error: ${e.message}`, 'error');
         });
+
+        // Add click event listener to register button (instead of inline onclick)
+        registerBtn.addEventListener('click', register);
 
         // Add enter key support
         document.addEventListener('keypress', (e) => {
