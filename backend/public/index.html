@@ -693,7 +693,7 @@
 
                 listDiv.innerHTML = documents.map(doc => `
                     <div class="document-item ${doc.documentId === selectedDocumentId ? 'selected' : ''}"
-                         onclick="selectDocument('${doc.documentId}')">
+                         data-document-id="${doc.documentId}">
                         <div>
                             <strong>${doc.filename}</strong>
                             <span class="badge badge-${doc.status === 'completed' ? 'success' : doc.status === 'uploaded' ? 'warning' : 'info'}">
@@ -704,12 +704,29 @@
                             ${doc.wordCount ? `<br><small>Words: ${doc.wordCount}</small>` : ''}
                         </div>
                         <div>
-                            <button class="btn" onclick="event.stopPropagation(); selectDocument('${doc.documentId}')">
+                            <button class="btn select-doc-btn" data-document-id="${doc.documentId}">
                                 Select
                             </button>
                         </div>
                     </div>
                 `).join('');
+
+                // Add event delegation for document selection
+                document.querySelectorAll('.document-item').forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        if (!e.target.classList.contains('select-doc-btn')) {
+                            selectDocument(item.getAttribute('data-document-id'));
+                        }
+                    });
+                });
+
+                // Add event listeners for select buttons
+                document.querySelectorAll('.select-doc-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        selectDocument(btn.getAttribute('data-document-id'));
+                    });
+                });
             } catch (error) {
                 listDiv.innerHTML = `<div class="alert alert-error">❌ ${error.message}</div>`;
             }
