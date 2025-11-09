@@ -49,6 +49,25 @@ class DocumentStore {
   }
 
   /**
+   * Get all documents for a specific user
+   */
+  getByUserId(userId: string): DocumentMetadata[] {
+    return Array.from(this.documents.values())
+      .filter(doc => doc.userId === userId);
+  }
+
+  /**
+   * Get document by ID and verify ownership
+   */
+  getByIdAndUserId(documentId: string, userId: string): DocumentMetadata | undefined {
+    const doc = this.documents.get(documentId);
+    if (doc && doc.userId === userId) {
+      return doc;
+    }
+    return undefined;
+  }
+
+  /**
    * Get all documents (for testing/debugging)
    */
   getAll(): DocumentMetadata[] {

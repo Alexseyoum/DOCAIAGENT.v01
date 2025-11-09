@@ -12,9 +12,10 @@ import { logger } from '../utils/logger';
 export async function processDocument(req: Request, res: Response, next: NextFunction) {
   try {
     const { id } = req.params;
+    const userId = (req as any).user?.userId;
 
-    // Get document from store
-    const document = documentStore.get(id);
+    // Get document from store and verify ownership
+    const document = documentStore.getByIdAndUserId(id, userId);
 
     if (!document) {
       throw new ApiException(

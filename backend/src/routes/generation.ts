@@ -1,8 +1,12 @@
 import { Router } from 'express';
 import { generateSummary, generateQuiz, generateFlashcards } from '../controllers/generation-controller';
 import { generationLimiter } from '../middleware/rate-limit';
+import { authenticate } from '../middleware/auth';
 
 const router = Router();
+
+// Apply authentication to all generation routes
+router.use(authenticate);
 
 // Apply rate limiting to all generation endpoints
 router.use(generationLimiter);

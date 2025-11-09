@@ -34,10 +34,12 @@ export async function uploadDocument(req: Request, res: Response, next: NextFunc
 
     // Get documentId that was set by multer middleware
     const documentId = (req as any).documentId;
+    const userId = (req as any).user?.userId;
 
     // Create document metadata
     const metadata: DocumentMetadata = {
       documentId,
+      userId, // Associate document with authenticated user
       filename: req.file.filename,
       originalFilename: req.file.originalname,
       fileSize: req.file.size,
@@ -83,9 +85,10 @@ export async function uploadDocument(req: Request, res: Response, next: NextFunc
 export async function getDocument(req: Request, res: Response, next: NextFunction) {
   try {
     const { id } = req.params;
+    const userId = (req as any).user?.userId;
 
-    // Get document from store
-    const document = documentStore.get(id);
+    // Get document from store and verify ownership
+    const document = documentStore.getByIdAndUserId(id, userId);
 
     if (!document) {
       throw new ApiException(
@@ -117,12 +120,14 @@ export async function getDocument(req: Request, res: Response, next: NextFunctio
  * List all documents
  * GET /api/v1/documents
  */
-export async function listDocuments(_req: Request, res: Response, next: NextFunction) {
+export async function listDocuments(req: Request, res: Response, next: NextFunction) {
   try {
-    // Get all documents from store
-    const documents = documentStore.getAll();
+    const userId = (req as any).user?.userId;
 
-    // Map to response format
+    // Get all documents for this user
+    const documents = documentStore.getByUserId(userId);
+
+    // Map to response format (including wordCount)
     const documentList = documents.map(doc => ({
       documentId: doc.documentId,
       filename: doc.originalFilename,
@@ -130,7 +135,8 @@ export async function listDocuments(_req: Request, res: Response, next: NextFunc
       mimeType: doc.mimeType,
       uploadedAt: doc.uploadedAt,
       status: doc.status,
-      pageCount: doc.pageCount
+      pageCount: doc.pageCount,
+      wordCount: doc.wordCount
     }));
 
     res.status(200).json({

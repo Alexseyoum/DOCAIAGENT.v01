@@ -13,8 +13,12 @@ import {
   getExtractedText
 } from '../controllers/processing-controller';
 import { uploadLimiter } from '../middleware/rate-limit';
+import { authenticate } from '../middleware/auth';
 
 const router = Router();
+
+// Apply authentication to all document routes
+router.use(authenticate);
 
 /**
  * POST /api/v1/documents/upload

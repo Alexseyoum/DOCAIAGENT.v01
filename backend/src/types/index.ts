@@ -1,5 +1,6 @@
 export interface DocumentMetadata {
   documentId: string;
+  userId: string; // User who uploaded the document
   filename: string;
   originalFilename: string;
   fileSize: number;

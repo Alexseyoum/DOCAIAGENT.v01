@@ -19,6 +19,7 @@ interface SummaryRequest {
 export async function generateSummary(req: Request, res: Response, next: NextFunction) {
   try {
     const { documentId, detailLevel = 'brief', maxLength }: SummaryRequest = req.body;
+    const userId = (req as any).user?.userId;
 
     // Validate request
     if (!documentId) {
@@ -29,8 +30,8 @@ export async function generateSummary(req: Request, res: Response, next: NextFun
       );
     }
 
-    // Get document from store
-    const document = documentStore.get(documentId);
+    // Get document from store and verify ownership
+    const document = documentStore.getByIdAndUserId(documentId, userId);
 
     if (!document) {
       throw new ApiException(
@@ -235,6 +236,7 @@ export async function generateQuiz(req: Request, res: Response, next: NextFuncti
       difficulty = 'medium',
       questionTypes = ['multiple-choice', 'true-false']
     } = req.body;
+    const userId = (req as any).user?.userId;
 
     // Validate request
     if (!documentId) {
@@ -245,8 +247,8 @@ export async function generateQuiz(req: Request, res: Response, next: NextFuncti
       );
     }
 
-    // Get document from store
-    const document = documentStore.get(documentId);
+    // Get document from store and verify ownership
+    const document = documentStore.getByIdAndUserId(documentId, userId);
 
     if (!document) {
       throw new ApiException(
@@ -471,6 +473,7 @@ export async function generateFlashcards(req: Request, res: Response, next: Next
       cardCount = 15,
       focusAreas = ['key-terms', 'concepts', 'facts']
     } = req.body;
+    const userId = (req as any).user?.userId;
 
     // Validate request
     if (!documentId) {
@@ -481,8 +484,8 @@ export async function generateFlashcards(req: Request, res: Response, next: Next
       );
     }
 
-    // Get document from store
-    const document = documentStore.get(documentId);
+    // Get document from store and verify ownership
+    const document = documentStore.getByIdAndUserId(documentId, userId);
 
     if (!document) {
       throw new ApiException(
