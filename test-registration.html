@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Registration</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f0f0f0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test Registration Form</h1>
+
+    <div class="form-group">
+        <label>Email:</label>
+        <input type="email" id="email" placeholder="your@email.com">
+    </div>
+
+    <div class="form-group">
+        <label>Password:</label>
+        <input type="password" id="password" placeholder="Minimum 6 characters">
+    </div>
+
+    <div class="form-group">
+        <label>Name:</label>
+        <input type="text" id="name" placeholder="Your Name">
+    </div>
+
+    <button onclick="register()">Register & Get API Key</button>
+
+    <div id="result" class="hidden"></div>
+    <div id="debug"></div>
+
+    <script>
+        const API_BASE = 'https://docaiagent-v01.onrender.com';
+
+        console.log('Script loaded. API_BASE:', API_BASE);
+
+        async function register() {
+            console.log('Register function called!');
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const name = document.getElementById('name').value;
+            const resultDiv = document.getElementById('result');
+            const debugDiv = document.getElementById('debug');
+
+            debugDiv.innerHTML = `<p>Function called at ${new Date().toISOString()}</p>`;
+
+            console.log('Form values:', { email, password: '***', name });
+
+            if (!email || !password || !name) {
+                resultDiv.textContent = 'Please fill in all fields';
+                resultDiv.classList.remove('hidden');
+                console.log('Validation failed: Missing fields');
+                return;
+            }
+
+            if (password.length < 6) {
+                resultDiv.textContent = 'Password must be at least 6 characters';
+                resultDiv.classList.remove('hidden');
+                console.log('Validation failed: Password too short');
+                return;
+            }
+
+            resultDiv.textContent = 'Registering...';
+            resultDiv.classList.remove('hidden');
+            console.log('Starting registration request...');
+
+            try {
+                const url = `${API_BASE}/api/v1/auth/register`;
+                console.log('Fetching:', url);
+
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password, name })
+                });
+
+                console.log('Response status:', response.status);
+                console.log('Response headers:', [...response.headers.entries()]);
+
+                const data = await response.json();
+                console.log('Response data:', data);
+
+                if (data.success) {
+                    resultDiv.textContent = `✅ SUCCESS! Your API Key:\n\n${data.data.token}\n\n⚠️ IMPORTANT: Save this token! You'll need it for all API requests.\n\nUse it in your requests like this:\nAuthorization: Bearer ${data.data.token}`;
+                } else {
+                    resultDiv.textContent = `❌ Error: ${data.error.message}`;
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                resultDiv.textContent = `❌ Error: ${error.message}\n\nCheck browser console for details.`;
+            }
+        }
+
+        // Test on page load
+        window.addEventListener('load', () => {
+            console.log('Page loaded successfully');
+            document.getElementById('debug').innerHTML += '<p>Page loaded. Click button to test.</p>';
+        });
+
+        // Catch any global errors
+        window.addEventListener('error', (e) => {
+            console.error('Global error:', e);
+            document.getElementById('debug').innerHTML += `<p style="color: red;">Error: ${e.message}</p>`;
+        });
+    </script>
+</body>
+</html>

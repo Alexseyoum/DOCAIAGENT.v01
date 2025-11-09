@@ -1,0 +1,21 @@
+# Machine Learning Fundamentals
+
+Machine learning is a branch of artificial intelligence (AI) that enables computers to learn from data without being explicitly programmed. It has revolutionized many fields including healthcare, finance, and technology.
+
+## Key Concepts
+
+1. **Supervised Learning**: Learning from labeled data
+2. **Unsupervised Learning**: Finding patterns in unlabeled data
+3. **Neural Networks**: Models inspired by the human brain
+4. **Deep Learning**: Multi-layered neural networks
+
+## Applications
+
+- Image Recognition
+- Natural Language Processing
+- Recommendation Systems
+- Autonomous Vehicles
+
+## Conclusion
+
+Machine learning continues to advance rapidly, with new techniques and applications emerging constantly.

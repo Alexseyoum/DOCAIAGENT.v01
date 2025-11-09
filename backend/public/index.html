@@ -353,7 +353,7 @@
                             <h3>Welcome, <span id="userName">User</span>!</h3>
                             <p>Email: <span id="userEmail">user@example.com</span></p>
                         </div>
-                        <button class="btn btn-danger" onclick="logout()">Logout</button>
+                        <button class="btn btn-danger" id="logoutBtn">Logout</button>
                     </div>
                 </div>
 
@@ -364,7 +364,7 @@
                         <label>Select File (PDF, DOCX, TXT, CSV, XLSX - Max 50MB):</label>
                         <input type="file" id="fileInput" accept=".pdf,.docx,.doc,.txt,.csv,.xlsx">
                     </div>
-                    <button class="btn btn-success" onclick="uploadDocument()">
+                    <button class="btn btn-success" id="uploadBtn">
                         <span id="uploadBtnText">Upload Document</span>
                     </button>
                     <div id="uploadResult" class="hidden"></div>
@@ -373,7 +373,7 @@
                 <!-- My Documents -->
                 <div class="section">
                     <h2>📚 My Documents</h2>
-                    <button class="btn" onclick="loadDocuments()">Refresh List</button>
+                    <button class="btn" id="refreshDocsBtn">Refresh List</button>
                     <div id="documentsList"></div>
                 </div>
 
@@ -387,15 +387,15 @@
                     <div id="contentGeneration" class="hidden">
                         <div class="alert alert-success">
                             ✅ Selected: <strong id="selectedDocName"></strong>
-                            <button class="btn" style="float: right;" onclick="processDocument()">
+                            <button class="btn" style="float: right;" id="processBtn">
                                 <span id="processBtnText">Extract Text</span>
                             </button>
                         </div>
 
                         <div class="tabs">
-                            <button class="tab active" onclick="switchContentTab('summary')">📝 Summary</button>
-                            <button class="tab" onclick="switchContentTab('quiz')">❓ Quiz</button>
-                            <button class="tab" onclick="switchContentTab('flashcards')">🎴 Flashcards</button>
+                            <button class="tab active" data-tab="summary">📝 Summary</button>
+                            <button class="tab" data-tab="quiz">❓ Quiz</button>
+                            <button class="tab" data-tab="flashcards">🎴 Flashcards</button>
                         </div>
 
                         <!-- Summary Tab -->
@@ -408,7 +408,7 @@
                                     <option value="detailed">Detailed (Comprehensive)</option>
                                 </select>
                             </div>
-                            <button class="btn btn-success" onclick="generateSummary()">
+                            <button class="btn btn-success" id="generateSummaryBtn">
                                 <span id="summaryBtnText">Generate Summary</span>
                             </button>
                             <div id="summaryResult" class="hidden"></div>
@@ -428,7 +428,7 @@
                                     <option value="short_answer">Short Answer</option>
                                 </select>
                             </div>
-                            <button class="btn btn-success" onclick="generateQuiz()">
+                            <button class="btn btn-success" id="generateQuizBtn">
                                 <span id="quizBtnText">Generate Quiz</span>
                             </button>
                             <div id="quizResult" class="hidden"></div>
@@ -440,7 +440,7 @@
                                 <label>Number of Cards:</label>
                                 <input type="number" id="cardCount" value="10" min="1" max="50">
                             </div>
-                            <button class="btn btn-success" onclick="generateFlashcards()">
+                            <button class="btn btn-success" id="generateFlashcardsBtn">
                                 <span id="flashcardsBtnText">Generate Flashcards</span>
                             </button>
                             <div id="flashcardsResult" class="hidden"></div>
@@ -587,6 +587,35 @@
                 btn.disabled = false;
                 btn.textContent = 'Login';
             }
+        });
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+
+        // Upload Document
+        document.getElementById('uploadBtn').addEventListener('click', uploadDocument);
+
+        // Refresh Documents List
+        document.getElementById('refreshDocsBtn').addEventListener('click', loadDocuments);
+
+        // Process Document
+        document.getElementById('processBtn').addEventListener('click', processDocument);
+
+        // Generate Summary
+        document.getElementById('generateSummaryBtn').addEventListener('click', generateSummary);
+
+        // Generate Quiz
+        document.getElementById('generateQuizBtn').addEventListener('click', generateQuiz);
+
+        // Generate Flashcards
+        document.getElementById('generateFlashcardsBtn').addEventListener('click', generateFlashcards);
+
+        // Tab switching - use event delegation
+        document.querySelectorAll('.tab[data-tab]').forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                const tabName = e.target.getAttribute('data-tab');
+                switchContentTab(tabName);
+            });
         });
 
         // Show App
