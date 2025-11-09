@@ -49,8 +49,12 @@ export const config = {
   // Logging
   logLevel: process.env.LOG_LEVEL || 'info',
 
-  // CORS
-  corsOrigins: process.env.CORS_ORIGINS?.split(',') || ['http://localhost:3001']
+  // CORS - Allow self-origin in production
+  corsOrigins: process.env.CORS_ORIGINS?.split(',') || (
+    process.env.NODE_ENV === 'production'
+      ? ['*']  // Allow all origins in production (or specify your domains)
+      : ['http://localhost:3001', 'http://localhost:3000']
+  )
 };
 
 // Validate required config

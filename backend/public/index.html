@@ -198,6 +198,11 @@
             background: #059669;
         }
 
+        .test-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
         .result {
             background: #1e293b;
             color: #e2e8f0;
@@ -213,6 +218,27 @@
 
         .hidden {
             display: none;
+        }
+
+        .debug-info {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+
+        .error {
+            background: #fee;
+            border: 1px solid #fcc;
+            color: #c00;
+        }
+
+        .success {
+            background: #efe;
+            border: 1px solid #cfc;
+            color: #060;
         }
     </style>
 </head>
@@ -274,21 +300,22 @@
 
                     <div class="form-group">
                         <label>Email:</label>
-                        <input type="email" id="email" placeholder="your@email.com">
+                        <input type="email" id="email" placeholder="your@email.com" autocomplete="email">
                     </div>
 
                     <div class="form-group">
                         <label>Password:</label>
-                        <input type="password" id="password" placeholder="Minimum 6 characters">
+                        <input type="password" id="password" placeholder="Minimum 6 characters" autocomplete="new-password">
                     </div>
 
                     <div class="form-group">
                         <label>Name:</label>
-                        <input type="text" id="name" placeholder="Your Name">
+                        <input type="text" id="name" placeholder="Your Name" autocomplete="name">
                     </div>
 
-                    <button class="test-btn" onclick="register()">Register & Get API Key</button>
+                    <button id="registerBtn" class="test-btn" onclick="register()">Register & Get API Key</button>
 
+                    <div id="debug" class="debug-info hidden"></div>
                     <div id="result" class="result hidden"></div>
                 </div>
             </div>
@@ -403,48 +430,125 @@
 
     <script>
         const API_BASE = window.location.origin;
+        const debugDiv = document.getElementById('debug');
+        const resultDiv = document.getElementById('result');
+        const registerBtn = document.getElementById('registerBtn');
+
+        // Show debug info
+        function showDebug(message, type = 'info') {
+            console.log('[DEBUG]', message);
+            debugDiv.innerHTML = `<p class="${type}">${message}</p>`;
+            debugDiv.classList.remove('hidden');
+        }
+
+        // Show result
+        function showResult(message, isError = false) {
+            resultDiv.textContent = message;
+            resultDiv.classList.remove('hidden');
+            if (isError) {
+                resultDiv.style.background = '#fee';
+                resultDiv.style.color = '#c00';
+            } else {
+                resultDiv.style.background = '#1e293b';
+                resultDiv.style.color = '#e2e8f0';
+            }
+        }
 
         async function register() {
+            console.log('[REGISTER] Function called');
+            showDebug('Register function called - gathering form data...', 'info');
+
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const name = document.getElementById('name').value;
-            const resultDiv = document.getElementById('result');
 
+            console.log('[REGISTER] Form values:', { email, password: '***', name });
+
+            // Validation
             if (!email || !password || !name) {
-                resultDiv.textContent = 'Please fill in all fields';
-                resultDiv.classList.remove('hidden');
+                showResult('❌ Please fill in all fields', true);
+                showDebug('Validation failed: Missing fields', 'error');
                 return;
             }
 
             if (password.length < 6) {
-                resultDiv.textContent = 'Password must be at least 6 characters';
-                resultDiv.classList.remove('hidden');
+                showResult('❌ Password must be at least 6 characters', true);
+                showDebug('Validation failed: Password too short', 'error');
                 return;
             }
 
-            resultDiv.textContent = 'Registering...';
-            resultDiv.classList.remove('hidden');
+            // Disable button
+            registerBtn.disabled = true;
+            registerBtn.textContent = 'Registering...';
+
+            showResult('🔄 Registering...');
+            showDebug('Sending registration request...', 'info');
 
             try {
-                const response = await fetch(`${API_BASE}/api/v1/auth/register`, {
+                const url = `${API_BASE}/api/v1/auth/register`;
+                console.log('[REGISTER] Fetching:', url);
+                showDebug(`Making request to: ${url}`, 'info');
+
+                const requestBody = { email, password, name };
+                console.log('[REGISTER] Request body:', { ...requestBody, password: '***' });
+
+                const response = await fetch(url, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ email, password, name })
+                    body: JSON.stringify(requestBody)
                 });
 
+                console.log('[REGISTER] Response status:', response.status);
+                console.log('[REGISTER] Response ok:', response.ok);
+                showDebug(`Response status: ${response.status} ${response.statusText}`, 'info');
+
                 const data = await response.json();
+                console.log('[REGISTER] Response data:', data);
 
                 if (data.success) {
-                    resultDiv.textContent = `✅ SUCCESS! Your API Key:\n\n${data.data.token}\n\n⚠️ IMPORTANT: Save this token! You'll need it for all API requests.\n\nUse it in your requests like this:\nAuthorization: Bearer ${data.data.token}`;
+                    const message = `✅ SUCCESS! Your API Key:\n\n${data.data.token}\n\n⚠️ IMPORTANT: Save this token! You'll need it for all API requests.\n\nUse it in your requests like this:\nAuthorization: Bearer ${data.data.token}`;
+                    showResult(message, false);
+                    showDebug('Registration successful!', 'success');
                 } else {
-                    resultDiv.textContent = `❌ Error: ${data.error.message}`;
+                    const errorMsg = `❌ Error: ${data.error?.message || 'Unknown error'}`;
+                    showResult(errorMsg, true);
+                    showDebug(`Registration failed: ${data.error?.message}`, 'error');
                 }
             } catch (error) {
-                resultDiv.textContent = `❌ Error: ${error.message}`;
+                console.error('[REGISTER] Error:', error);
+                const errorMsg = `❌ Error: ${error.message}\n\nCheck browser console (F12) for details.`;
+                showResult(errorMsg, true);
+                showDebug(`Exception occurred: ${error.message}`, 'error');
+            } finally {
+                // Re-enable button
+                registerBtn.disabled = false;
+                registerBtn.textContent = 'Register & Get API Key';
             }
         }
+
+        // Test on page load
+        window.addEventListener('load', () => {
+            console.log('[INIT] Page loaded');
+            console.log('[INIT] API_BASE:', API_BASE);
+            showDebug(`API Base URL: ${API_BASE}`, 'success');
+        });
+
+        // Catch global errors
+        window.addEventListener('error', (e) => {
+            console.error('[ERROR] Global error:', e);
+            showDebug(`Global error: ${e.message}`, 'error');
+        });
+
+        // Add enter key support
+        document.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                register();
+            }
+        });
+
+        console.log('[INIT] Script loaded successfully');
     </script>
 </body>
 </html>
